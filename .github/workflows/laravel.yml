@@ -10,14 +10,22 @@ jobs:
   laravel:
     name: Laravel (PHP ${{ matrix.php-versions }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php-versions: ['8.3']
+    container:
+      image: php:${{ matrix.php-version }}
+      options: --user root
+      volumes:
+        - .:/app
     env:
-      DB_HOST: '127.0.0.1'
       DB_DATABASE: laravel
       DB_USERNAME: root
       DB_PASSWORD: password
       BROADCAST_DRIVER: log
     services:
-      mysql:
+      backend_mysql:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: "password"
@@ -29,10 +37,7 @@ jobs:
           SERVICE_TAGS: dev
           SERVICE_NAME: mysql
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-    strategy:
-      fail-fast: false
-      matrix:
-        php-versions: ['8.3']
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
