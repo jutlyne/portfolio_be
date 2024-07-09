@@ -16,11 +16,13 @@ jobs:
       DB_PASSWORD: password
       BROADCAST_DRIVER: log
     services:
-      mysql:
+      backend_mysql:
         image: mysql:8.0
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: false
           MYSQL_ROOT_PASSWORD: password
+          MYSQL_USER: docker
+          MYSQL_PASSWORD: password
           MYSQL_DATABASE: laravel
         ports:
           - 3306/tcp
@@ -51,8 +53,6 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          # Use composer.json for key, if composer.lock is not committed.
-          # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
