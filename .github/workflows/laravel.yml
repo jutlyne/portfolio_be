@@ -13,21 +13,16 @@ jobs:
     env:
       DB_HOST: '127.0.0.1'
       DB_DATABASE: laravel
-      DB_USERNAME: docker
+      DB_USERNAME: root
       DB_PASSWORD: password
       BROADCAST_DRIVER: log
     services:
-      backend_mysql:
+      mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: "password"
-          MYSQL_ROOT_HOST: "%"
-          MYSQL_DATABASE: "laravel"
-          MYSQL_USER: "docker"
-          MYSQL_PASSWORD: "password"
-          MYSQL_ALLOW_EMPTY_PASSWORD: 1
-          SERVICE_TAGS: dev
-          SERVICE_NAME: mysql
+          MYSQL_ALLOW_EMPTY_PASSWORD: false
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: laravel
         ports:
           - 3306/tcp
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
