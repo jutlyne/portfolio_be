@@ -63,6 +63,7 @@ jobs:
         run: |
           php -r "file_exists('.env') || copy('.env.example', '.env');"
           php artisan key:generate
+          cat .env
 
       - name: Clear Config
         run: php artisan config:clear
