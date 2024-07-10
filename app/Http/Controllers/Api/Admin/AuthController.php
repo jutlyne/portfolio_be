@@ -2,28 +2,29 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Api\BaseController;
-use App\Http\Requests\Auth\LoginRequest;
-use Carbon\Carbon;
-use Illuminate\Http\JsonResponse;
+use App\Enum\JwtEnum;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
-
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Token as JWTToken;
-
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Controllers\Api\BaseController;
+use Illuminate\Routing\Controllers\Middleware;
+use App\Http\Requests\Auth\RefeshTokenRequest;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use App\Models\User;
+use App\Trait\JwtTrait;
 
 class AuthController extends BaseController implements HasMiddleware
 {
+    use JwtTrait;
+
     /**
      * Get the middleware that should be assigned to the controller.
      */
     public static function middleware(): array
     {
         return [
-            new Middleware('auth:api', except: ['login']),
+            new Middleware('auth:api', except: ['login', 'refreshToken']),
         ];
     }
 
@@ -36,14 +37,11 @@ class AuthController extends BaseController implements HasMiddleware
     public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->validated();
-        $refeshTokenTTL = 60 * 24 * 30;
+        $refeshTokenTTL = JwtEnum::RefreshTokenTtl;
 
         if (Auth::attempt($credentials)) {
             $user = auth()->user();
-            $token = JWTAuth::fromUser($user);
-
-            JWTAuth::factory()->setTTL($refeshTokenTTL);
-            $refeshToken = JWTAuth::fromUser($user);
+            @list($token, $refeshToken) = $this->generateTokensWithTTL($user, $refeshTokenTTL);
 
             return $this->successResponse([
                 'token' => $token,
@@ -63,17 +61,32 @@ class AuthController extends BaseController implements HasMiddleware
     {
         $token = $request->bearerToken();
         if ($token) {
-            JWTAuth::manager()->invalidate(new JWTToken($token), false);
+            $this->invalidateToken($token);
         }
 
         return $this->successResponse([], __('auth.logout'));
     }
 
-    public function refreshToken()
+    public function refreshToken(RefeshTokenRequest $request)
     {
-        $token = JWTAuth::parseToken()->refresh();
+        $token = $request->refresh_token;
+        $jwtClass = $this->getJwtClassFromToken($token);
+        $userId = $jwtClass->getClaim('sub');
+        $timestampTTL = $jwtClass->getClaim('exp');
+        $diffInMinutes = $this->calculateMinutesFromNow($timestampTTL);
 
-        return $this->successResponse(['token' => $token], __('auth.success'));
+        if ($userId) {
+            $user = User::find($userId);
+            @list($newToken, $refeshToken) = $this->generateTokensWithTTL($user, $diffInMinutes);
+            $this->invalidateToken($token);
+
+            return $this->successResponse([
+                'token' => $newToken,
+                'refeshToken' => $refeshToken
+            ], __('auth.success'));
+        }
+
+        return $this->failedResponse(__('auth.failed'));
     }
 
     /**
