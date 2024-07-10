@@ -15,7 +15,7 @@ use App\Traits\JwtTrait;
 
 class AuthController extends BaseController implements HasMiddleware
 {
-    use JwtTrait;
+    use JwtTraitt;
 
     /**
      * Get the middleware that should be assigned to the controller.
