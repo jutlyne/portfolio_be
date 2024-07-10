@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Enum;
+namespace App\Enums;
 
-enum JwtEnum: string
+enum JwtEnum: int
 {
-    case RefreshTokenTtl = 60 * 24 * 30;
 }

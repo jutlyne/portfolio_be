@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Enum\JwtEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +11,7 @@ use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Requests\Auth\RefeshTokenRequest;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use App\Models\User;
-use App\Trait\JwtTrait;
+use App\Traits\JwtTrait;
 
 class AuthController extends BaseController implements HasMiddleware
 {
@@ -37,15 +36,15 @@ class AuthController extends BaseController implements HasMiddleware
     public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->validated();
-        $refeshTokenTTL = JwtEnum::RefreshTokenTtl;
+        $refeshTokenTTL = 60 * 24 * 30;
 
         if (Auth::attempt($credentials)) {
             $user = auth()->user();
-            @list($token, $refeshToken) = $this->generateTokensWithTTL($user, $refeshTokenTTL);
+            @list($token, $refreshToken) = $this->generateTokensWithTTL($user, $refeshTokenTTL);
 
             return $this->successResponse([
                 'token' => $token,
-                'refeshToken' => $refeshToken
+                'refreshToken' => $refreshToken
             ], __('auth.success'));
         }
 
@@ -67,6 +66,12 @@ class AuthController extends BaseController implements HasMiddleware
         return $this->successResponse([], __('auth.logout'));
     }
 
+     /**
+     * Refresh the JWT token using the provided refresh token.
+     *
+     * @param \App\Http\Requests\RefreshTokenRequest $request The request containing the refresh token.
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function refreshToken(RefeshTokenRequest $request)
     {
         $token = $request->refresh_token;
@@ -77,12 +82,12 @@ class AuthController extends BaseController implements HasMiddleware
 
         if ($userId) {
             $user = User::find($userId);
-            @list($newToken, $refeshToken) = $this->generateTokensWithTTL($user, $diffInMinutes);
+            @list($newToken, $refreshToken) = $this->generateTokensWithTTL($user, $diffInMinutes);
             $this->invalidateToken($token);
 
             return $this->successResponse([
                 'token' => $newToken,
-                'refeshToken' => $refeshToken
+                'refreshToken' => $refreshToken
             ], __('auth.success'));
         }
 
