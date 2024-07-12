@@ -18,7 +18,10 @@ class BlogResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'short_text' => $this->short_text,
-            'body' => $this->body,
+            'body' => $this->when(
+                $this->body,
+                $this->body
+            ),
             'image' => $this->image,
             'tags' => TagResource::collection($this->tags),
             'created_at' => $this->created_at,

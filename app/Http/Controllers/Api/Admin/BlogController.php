@@ -56,7 +56,7 @@ class BlogController extends BaseController
             ->with(['tags'])
             ->skip($request->skip)
             ->take($request->limit)
-            ->get();
+            ->get($this->selectColumns);
 
         return $this->successResponse(BlogResource::collection($blogs));
     }
