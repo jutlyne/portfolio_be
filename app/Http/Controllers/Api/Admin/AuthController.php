@@ -9,13 +9,23 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Controllers\Api\BaseController;
 use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Requests\Auth\RefeshTokenRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
+use App\Http\Resources\UserProfileResource;
+use App\Jobs\SendMailJob;
 use Illuminate\Routing\Controllers\HasMiddleware;
-use App\Models\User;
 use App\Traits\JwtTrait;
+use App\Repositories\UserRepository;
 
 class AuthController extends BaseController implements HasMiddleware
 {
-    use JwtTraitt;
+    use JwtTrait;
+
+    protected $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
 
     /**
      * Get the middleware that should be assigned to the controller.
@@ -23,7 +33,7 @@ class AuthController extends BaseController implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('auth:api', except: ['login', 'refreshToken']),
+            new Middleware('auth:api', except: ['login', 'refreshToken', 'resetPassword']),
         ];
     }
 
@@ -81,7 +91,7 @@ class AuthController extends BaseController implements HasMiddleware
         $diffInMinutes = $this->calculateMinutesFromNow($timestampTTL);
 
         if ($userId) {
-            $user = User::find($userId);
+            $user = $this->userRepository->find($userId);
             @list($newToken, $refreshToken) = $this->generateTokensWithTTL($user, $diffInMinutes);
             $this->invalidateToken($token);
 
@@ -103,6 +113,24 @@ class AuthController extends BaseController implements HasMiddleware
     {
         $user = Auth::user();
 
-        return $this->successResponse($user, __('messages.success'));
+        return $this->successResponse(new UserProfileResource($user), __('messages.success'));
+    }
+
+    /**
+     * Handle the user's password reset request.
+     *
+     * @param  ResetPasswordRequest  $request
+     * @return JsonResponse
+     */
+    public function resetPassword(ResetPasswordRequest $request): JsonResponse
+    {
+        $user = $this->userRepository->where('email', $request->email)->first();
+        $code = rand(1000, 9999);
+
+        if ($user) {
+            SendMailJob::dispatch($user, $code)->afterCommit();
+        }
+
+        return $this->successResponse([], __('messages.success'));
     }
 }

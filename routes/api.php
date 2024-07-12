@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Admin\AuthController;
 
 Route::prefix('admin')->group(function () {
     Route::post('login', [AuthController::class, 'login'])->name('login');
+    Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('reset_password');
     Route::post('refresh-token', [AuthController::class, 'refreshToken'])->name('refresh_token');
 
     Route::middleware(['auth:api'])->group(function () {

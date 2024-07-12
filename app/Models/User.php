@@ -19,10 +19,11 @@ class User extends Authenticatable implements JWTSubject, Transformable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
         'username',
         'email',
         'password',
+        'reset_password_code',
+        'reset_password_expired_at'
     ];
 
     /**
@@ -66,5 +67,28 @@ class User extends Authenticatable implements JWTSubject, Transformable
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    /**
+     * Route notifications for the mail channel.
+     *
+     * @param  \Illuminate\Notifications\Notification  $notification
+     * @return string
+     */
+    public function routeNotificationForMail($notification)
+    {
+        return $this->email;
+    }
+
+    /**
+     * Define a hasOne relationship with the UserProfile model.
+     *
+     * This indicates that this model has one UserProfile.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function profile()
+    {
+        return $this->hasOne(UserProfile::class);
     }
 }
