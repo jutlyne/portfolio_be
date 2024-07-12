@@ -125,7 +125,7 @@ class AuthController extends BaseController implements HasMiddleware
     public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
         $user = $this->userRepository->where('email', $request->email)->first();
-        $code = rand(1000, 9999);
+        $code = random_int(1000, 9999);
 
         if ($user) {
             SendMailJob::dispatch($user, $code)->afterCommit();
