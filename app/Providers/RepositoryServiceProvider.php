@@ -13,6 +13,8 @@ class RepositoryServiceProvider extends ServiceProvider
     public function register(): void
     {
         App::bind(\App\Repositories\UserRepository::class, \App\Repositories\UserRepositoryEloquent::class);
+        App::bind(\App\Repositories\BlogRepository::class, \App\Repositories\BlogRepositoryEloquent::class);
+        App::bind(\App\Repositories\TagRepository::class, \App\Repositories\TagRepositoryEloquent::class);
     }
 
     /**

@@ -35,7 +35,7 @@ class UserProfile extends BaseModel
     }
 
     /**
-     * Get the user's first name.
+     * Get the user's avatar.
      */
     public function avatar(): Attribute
     {

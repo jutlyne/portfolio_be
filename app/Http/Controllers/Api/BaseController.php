@@ -21,6 +21,7 @@ class BaseController extends Controller
         $response = [
             'data' => $data,
             'status' => $statusCode,
+            'messages' => __('messages.success')
         ];
 
         if (!empty($message)) {

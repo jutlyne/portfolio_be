@@ -91,4 +91,16 @@ class User extends Authenticatable implements JWTSubject, Transformable
     {
         return $this->hasOne(UserProfile::class);
     }
+
+    /**
+     * Define a hasMany relationship with the Blog model.
+     *
+     * This indicates that this model has one Blog.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function blogs()
+    {
+        return $this->hasMany(UserProfile::class);
+    }
 }
