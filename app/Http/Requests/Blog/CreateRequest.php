@@ -18,7 +18,7 @@ class CreateRequest extends BaseRequest
             'title' => ['required', 'string', 'max:200'],
             'slug' => ['required', 'string', 'max:200'],
             'body' => ['required', 'string'],
-            'image' => ['required', 'file'],
+            'image' => ['required', 'file', 'max:2048', 'mimetypes:image/*'],
             'short_text' => ['required', 'string', 'max:200'],
             'tags' => ['required'],
             'tags.*' => ['integer', 'exists:tags,id'],
