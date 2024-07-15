@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\Admin\BlogController;
+use App\Http\Controllers\Api\Admin\TagController;
+use App\Http\Controllers\Api\User\BlogController as UserBlogController;
 
 Route::prefix('admin')->group(function () {
     Route::post('login', [AuthController::class, 'login'])->name('login');
@@ -18,6 +20,19 @@ Route::prefix('admin')->group(function () {
             Route::get('', [BlogController::class, 'index'])->name('index');
             Route::get('/{id}', [BlogController::class, 'show'])->name('show');
             Route::post('', [BlogController::class, 'store'])->name('store');
+            Route::put('/{id}', [BlogController::class, 'update'])->name('update');
+            Route::delete('/{id}', [BlogController::class, 'delete'])->name('delete');
+        });
+
+        Route::group(['prefix' => 'tags', 'as' => 'tag.'], function () {
+            Route::get('', [TagController::class, 'index'])->name('index');
         });
     });
+});
+
+Route::group(['prefix' => 'blogs', 'as' => 'user.blog.'], function () {
+    Route::get('', [UserBlogController::class, 'index'])->name('index');
+    Route::get('/{slug}', [UserBlogController::class, 'show'])->name('show');
+
+    Route::post('upload-file', [UserBlogController::class, 'uploadFile'])->name('upload_file');
 });

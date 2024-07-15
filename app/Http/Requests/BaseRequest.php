@@ -40,7 +40,7 @@ class BaseRequest extends FormRequest
             'code' => $statusCodeError,
         ];
         foreach ($validator->errors()->messages() as $value => $item) {
-            $responseJson['message'] = $item[0];
+            $responseJson['messages'] = $item[0];
             break;
         }
 

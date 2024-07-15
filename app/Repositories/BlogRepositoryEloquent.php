@@ -2,11 +2,10 @@
 
 namespace App\Repositories;
 
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
-use App\Repositories\BlogRepository;
 use App\Models\Blog;
-use App\Validators\BlogValidator;
+use App\Repositories\BlogRepository;
+use Prettus\Repository\Criteria\RequestCriteria;
+use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class BlogRepositoryEloquent.
@@ -15,6 +14,19 @@ use App\Validators\BlogValidator;
  */
 class BlogRepositoryEloquent extends BaseRepository implements BlogRepository
 {
+    /**
+     * Define the columns to be selected from the database for a blog.
+     */
+    protected $selectColumns = [
+        'id',
+        'title',
+        'slug',
+        'short_text',
+        'image',
+        'created_at',
+        'updated_at',
+    ];
+
     /**
      * Specify Model class name
      *
@@ -25,8 +37,6 @@ class BlogRepositoryEloquent extends BaseRepository implements BlogRepository
         return Blog::class;
     }
 
-    
-
     /**
      * Boot up the repository, pushing criteria
      */
@@ -34,5 +44,52 @@ class BlogRepositoryEloquent extends BaseRepository implements BlogRepository
     {
         $this->pushCriteria(app(RequestCriteria::class));
     }
-    
+
+    /**
+     * Search for blogs based on given conditions.
+     *
+     * @param array $conditions
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function search($conditions)
+    {
+        $query = $this->with(['tags'])
+            ->when(
+                isset($conditions['title']),
+                function ($query) use ($conditions) {
+                    return $query->where('title', 'LIKE', '%' . $conditions['title'] . '%');
+                }
+            )
+            ->when(
+                isset($conditions['start_date']),
+                function ($query) use ($conditions) {
+                    return $query->where('created_at', '>=', $conditions['start_date']);
+                }
+            )
+            ->when(
+                isset($conditions['end_date']),
+                function ($query) use ($conditions) {
+                    return $query->where('created_at', '<=', $conditions['end_date']);
+                }
+            )
+            ->when(
+                isset($conditions['tag']),
+                function ($query) use ($conditions) {
+                    return $query->whereHas('tags', function ($q) use ($conditions) {
+                        $q->where('tags.id', $conditions['tag']);
+                    });
+                }
+            );
+
+        $totalRecords = $query->count();
+
+        $results = $query->skip($conditions['skip'])
+            ->take($conditions['limit'])
+            ->get($this->selectColumns);
+
+        return [
+            'total' => $totalRecords,
+            'data' => $results,
+        ];
+    }
 }

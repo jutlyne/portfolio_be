@@ -16,6 +16,10 @@ class ListRequest extends BaseRequest
         return [
             'limit' => ['required', 'integer'],
             'skip' => ['required', 'integer'],
+            'title' => ['nullable', 'string'],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
+            'tag' => ['nullable', 'integer'],
         ];
     }
 }

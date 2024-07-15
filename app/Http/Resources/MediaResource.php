@@ -4,9 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Routing\Route;
 
-class TagResource extends JsonResource
+class MediaResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,7 +16,8 @@ class TagResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'mime_type' => $this->mime_type,
+            'url' => $this->url,
         ];
     }
 }

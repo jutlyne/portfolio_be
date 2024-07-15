@@ -74,7 +74,7 @@ class Blog extends BaseModel implements Transformable
     public function image(): Attribute
     {
         return Attribute::make(
-            get: function (string $value) {
+            get: function ($value) {
                 return !empty($value) ? Storage::disk()->url($value) : '';
             },
         );

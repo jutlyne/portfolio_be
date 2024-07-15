@@ -19,8 +19,8 @@ class UserProfileResource extends JsonResource
             'name' => $this->profile?->fullname,
             'username' => $this->username,
             'email' => $this->email,
-            'birth_date' => $this->profile->birth_date,
-            'avatar' => $this->profile->avatar
+            'birth_date' => $this->profile?->birth_date,
+            'avatar' => $this->profile?->avatar
         ];
     }
 }
