@@ -10,6 +10,7 @@ use App\Http\Resources\MediaResource;
 use App\Repositories\BlogRepository;
 use App\Repositories\MediaRepository;
 use App\Traits\MediaTrait;
+use Illuminate\Http\Response;
 
 class BlogController extends BaseController
 {
@@ -84,7 +85,7 @@ class BlogController extends BaseController
             }
         }
 
-        return $this->failedResponse(__('messages.not_found'));
+        return $this->failedResponse(__('messages.not_found'), Response::HTTP_NOT_FOUND);
     }
 
     /**

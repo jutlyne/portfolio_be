@@ -8,6 +8,7 @@ use App\Http\Requests\Blog\ListRequest;
 use App\Http\Resources\BlogResource;
 use App\Repositories\BlogRepository;
 use App\Traits\MediaTrait;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class BlogController extends BaseController
@@ -91,7 +92,7 @@ class BlogController extends BaseController
             return $this->successResponse(new BlogResource($blog));
         } catch (\Throwable $th) {
             logger($th);
-            return $this->failedResponse(__('messages.not_found'));
+            return $this->failedResponse(__('messages.not_found'), Response::HTTP_NOT_FOUND);
         }
     }
 
