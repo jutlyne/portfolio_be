@@ -23,24 +23,24 @@ class UserProfile extends BaseModel
     ];
 
     /**
-     * Define a belongsTo relationship with the UserProfile model.
+     * Define a belongsTo relationship with the User model.
      *
-     * This indicates that this model belongs to a UserProfile.
+     * This indicates that this model belongs to a User.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()
     {
-        return $this->belongsTo(UserProfile::class);
+        return $this->belongsTo(User::class);
     }
 
     /**
-     * Get the user's first name.
+     * Get the user's avatar.
      */
     public function avatar(): Attribute
     {
         return Attribute::make(
-            get: function (string $value) {
+            get: function ($value) {
                 return !empty($value) ? Storage::disk()->url($value) : '';
             },
         );
