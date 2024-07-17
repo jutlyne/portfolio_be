@@ -17,6 +17,7 @@ class CreateRequest extends BaseRequest
         $rules = [
             'title' => ['required', 'string', 'max:200'],
             'slug' => ['required', 'string', 'max:200'],
+            'read_minutes' => ['required', 'integer', 'min:0', 'max:60'],
             'body' => ['required', 'string'],
             'image' => ['nullable', 'file', 'max:2048', 'mimetypes:image/*'],
             'short_text' => ['required', 'string', 'max:200'],

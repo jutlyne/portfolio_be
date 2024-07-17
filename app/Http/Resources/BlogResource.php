@@ -24,6 +24,7 @@ class BlogResource extends JsonResource
             'title' => $this->title,
             'slug' => $this->slug,
             'short_text' => $this->short_text,
+            'read_minutes' => $this->read_minutes,
             'body' => $this->when(
                 $this->body,
                 $this->body
