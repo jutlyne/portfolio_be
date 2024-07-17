@@ -32,7 +32,20 @@ class Blog extends BaseModel implements Transformable
         'views',
         'read_minutes',
         'image',
+        'headings',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'headings' => 'json',
+        ];
+    }
 
     /**
      * Define a belongsTo relationship with the User model.

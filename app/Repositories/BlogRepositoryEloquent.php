@@ -23,6 +23,7 @@ class BlogRepositoryEloquent extends BaseRepository implements BlogRepository
         'slug',
         'short_text',
         'image',
+        'headings',
         'created_at',
         'updated_at',
     ];

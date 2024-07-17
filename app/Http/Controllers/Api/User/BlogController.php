@@ -43,7 +43,10 @@ class BlogController extends BaseController
     {
         $blogs = $this->blogRepository->search($request->validated());
 
-        return $this->successResponse(BlogResource::collection($blogs));
+        return $this->successResponse([
+            'blogs' => BlogResource::collection($blogs['data']),
+            'total' => $blogs['total'],
+        ]);
     }
 
     /**

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\Admin\BlogController;
 use App\Http\Controllers\Api\Admin\TagController;
 use App\Http\Controllers\Api\User\BlogController as UserBlogController;
+use App\Http\Controllers\Api\User\TagController as UserTagController;
 
 Route::prefix('admin')->group(function () {
     Route::post('login', [AuthController::class, 'login'])->name('login');
@@ -35,4 +36,8 @@ Route::group(['prefix' => 'blogs', 'as' => 'user.blog.'], function () {
     Route::get('/{slug}', [UserBlogController::class, 'show'])->name('show');
 
     Route::post('upload-file', [UserBlogController::class, 'uploadFile'])->name('upload_file');
+});
+
+Route::group(['prefix' => 'tags', 'as' => 'user.tag.'], function () {
+    Route::get('', [UserTagController::class, 'index'])->name('index');
 });

@@ -31,6 +31,7 @@ class BlogResource extends JsonResource
             'image' => $this->image,
             'tags' => $tags,
             'tag_resource' => TagResource::collection($this->tags),
+            'headings' => $this->headings,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

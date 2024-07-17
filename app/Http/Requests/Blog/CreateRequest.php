@@ -22,6 +22,14 @@ class CreateRequest extends BaseRequest
             'short_text' => ['required', 'string', 'max:200'],
             'tags' => ['required'],
             'tags.*' => ['integer', 'exists:tags,id'],
+            'headings' => ['required', 'array'],
+            'headings.*.key' => ['required', 'integer'],
+            'headings.*.title' => ['required', 'string', 'max:255'],
+            'headings.*.href' => ['required', 'string', 'max:255'],
+            'headings.*.children' => ['nullable', 'array'],
+            'headings.*.children.*.key' => ['required', 'integer'],
+            'headings.*.children.*.title' => ['required', 'string', 'max:255'],
+            'headings.*.children.*.href' => ['required', 'string', 'max:255'],
         ];
 
         if (request()->isMethod('post')) {
