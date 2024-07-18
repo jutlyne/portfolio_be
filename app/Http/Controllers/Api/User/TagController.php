@@ -22,6 +22,11 @@ class TagController extends BaseController
         $this->tagRepository = $tagRepository;
     }
 
+    /**
+     * Retrieve a list of all tags that have associated blogs.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index()
     {
         $tags = $this->tagRepository->has('blogs')->get();

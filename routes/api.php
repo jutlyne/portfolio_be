@@ -27,6 +27,9 @@ Route::prefix('admin')->group(function () {
 
         Route::group(['prefix' => 'tags', 'as' => 'tag.'], function () {
             Route::get('', [TagController::class, 'index'])->name('index');
+            Route::post('', [TagController::class, 'store'])->name('store');
+            Route::patch('/{id}', [TagController::class, 'updatePatch'])->name('patch');
+            Route::delete('/{id}', [TagController::class, 'delete'])->name('delete');
         });
     });
 });
